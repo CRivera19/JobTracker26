@@ -112,6 +112,75 @@ function exportCSV() {
     a.download = 'job-applications.csv';
     a.click();
 }
+function triggerImport() {
+    const input = document.getElementById('csv-import');
+    input.value = '';
+    input.click();
+}
+
+function importCSV(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function (e) {
+        const lines = e.target.result.split('\n').map(l => l.trim()).filter(Boolean);
+        if (lines.length < 2) { alert('No data found in CSV.'); return; }
+        const headers = parseCSVRow(lines[0]).map(h => h.toLowerCase().replace(/\s+/g, ''));
+        const idx = {
+            company: headers.indexOf('company'),
+            role: headers.indexOf('role'),
+            status: headers.indexOf('status'),
+            date: headers.indexOf('dateapplied'),
+            salary: headers.indexOf('salary'),
+            url: headers.indexOf('url'),
+            notes: headers.indexOf('notes'),
+        };
+        if (idx.company === -1 || idx.role === -1) {
+            alert('CSV must have at least "Company" and "Role" columns.');
+            return;
+        }
+        const validStatuses = ['Applied', 'Interview', 'Offer', 'Rejected', 'Withdrawn', 'Ghosted'];
+        let imported = 0, skipped = 0;
+        lines.slice(1).forEach(line => {
+            const cols = parseCSVRow(line);
+            const company = cols[idx.company]?.trim();
+            const role = cols[idx.role]?.trim();
+            if (!company || !role) { skipped++; return; }
+            const status = validStatuses.includes(cols[idx.status]) ? cols[idx.status] : 'Applied';
+            const entry = {
+                id: Date.now().toString() + Math.random().toString(36).slice(2),
+                company, role, status,
+                date: idx.date !== -1 ? cols[idx.date]?.trim() || '' : '',
+                salary: idx.salary !== -1 ? cols[idx.salary]?.trim() || '' : '',
+                url: idx.url !== -1 ? cols[idx.url]?.trim() || '' : '',
+                notes: idx.notes !== -1 ? cols[idx.notes]?.trim() || '' : '',
+            };
+            jobs.unshift(entry);
+            imported++;
+        });
+        save(); render();
+        alert(`Imported ${imported} application${imported !== 1 ? 's' : ''}${skipped ? `, skipped ${skipped} invalid row${skipped !== 1 ? 's' : ''}` : ''}.`);
+    };
+    reader.readAsText(file);
+}
+
+function parseCSVRow(line) {
+    const cols = [];
+    let cur = '', inQuotes = false;
+    for (let i = 0; i < line.length; i++) {
+        const ch = line[i];
+        if (ch === '"') {
+            if (inQuotes && line[i + 1] === '"') { cur += '"'; i++; }
+            else inQuotes = !inQuotes;
+        } else if (ch === ',' && !inQuotes) {
+            cols.push(cur); cur = '';
+        } else {
+            cur += ch;
+        }
+    }
+    cols.push(cur);
+    return cols;
+}
 
 document.getElementById('modal-bg').addEventListener('click', e => {
     if (e.target === document.getElementById('modal-bg')) closeModal();

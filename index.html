@@ -25,6 +25,8 @@
         <option>Rejected</option><option>Withdrawn</option><option>Ghosted</option>
       </select>
       <button onclick="exportCSV()"><i class="ti ti-download"></i> Export CSV</button>
+      <button onclick="triggerImport()"><i class="ti ti-upload"></i> Import CSV</button>
+      <input type="file" id="csv-import" accept=".csv" style="display:none" onchange="importCSV(event)">
       <button onclick="openModal()"><i class="ti ti-plus"></i> Add job</button>
     </div>
 
