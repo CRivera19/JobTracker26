@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Job Application Tracker</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>Job Application Tracker</h1>
+    <p>Keep track of every role you apply to.</p>
+  </header>
+
+  <div class="stats" id="stats"></div>
+
+  <div class="card">
+    <div class="toolbar">
+      <input type="text" id="search" placeholder="Search company or role…" oninput="render()">
+      <select id="filter-status" onchange="render()">
+        <option value="">All statuses</option>
+        <option>Applied</option><option>Interview</option><option>Offer</option>
+        <option>Rejected</option><option>Withdrawn</option><option>Ghosted</option>
+      </select>
+      <button onclick="exportCSV()"><i class="ti ti-download"></i> Export CSV</button>
+      <button onclick="openModal()"><i class="ti ti-plus"></i> Add job</button>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th class="col-company">Company</th>
+          <th class="col-role">Role</th>
+          <th class="col-status">Status</th>
+          <th class="col-date">Applied</th>
+          <th class="col-salary">Salary</th>
+          <th class="col-notes">Notes</th>
+          <th class="col-actions"></th>
+        </tr>
+      </thead>
+      <tbody id="tbody"></tbody>
+    </table>
+    <div class="empty" id="empty">No applications yet — click "Add job" to get started.</div>
+  </div>
+</div>
+
+<div class="modal-bg" id="modal-bg">
+  <div class="modal">
+    <h2 id="modal-title">Add application</h2>
+    <div class="row2">
+      <div class="field"><label>Company *</label><input type="text" id="f-company" placeholder="e.g. Acme Corp"></div>
+      <div class="field"><label>Role *</label><input type="text" id="f-role" placeholder="e.g. Product Designer"></div>
+    </div>
+    <div class="row2">
+      <div class="field"><label>Status</label>
+        <select id="f-status">
+          <option>Applied</option><option>Interview</option><option>Offer</option>
+          <option>Rejected</option><option>Withdrawn</option><option>Ghosted</option>
+        </select>
+      </div>
+      <div class="field"><label>Date applied</label><input type="date" id="f-date"></div>
+    </div>
+    <div class="row2">
+      <div class="field"><label>Salary / range</label><input type="text" id="f-salary" placeholder="e.g. $90k–$110k"></div>
+      <div class="field"><label>Job URL</label><input type="text" id="f-url" placeholder="https://…"></div>
+    </div>
+    <div class="field"><label>Notes</label><textarea id="f-notes" placeholder="Recruiter name, interview rounds, next steps…"></textarea></div>
+    <div class="modal-footer">
+      <button onclick="closeModal()">Cancel</button>
+      <button class="btn-primary" onclick="saveEntry()">Save</button>
+    </div>
+  </div>
+  <script src="index.js"></script>
+</div>
+</body>
+</html>
